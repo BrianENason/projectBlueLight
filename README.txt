@@ -58,6 +58,8 @@ I.	GitHub Link to Project:
 
 This project is hosted on GitHub at the following link:
 
+https://github.com/BrianENason/projectBlueLight
+
 Click on the green "Code" button and select "Download Zip" from the dropdown.
 
 Please note: This repository is shared publicly for your ease of access. Because of this, the 

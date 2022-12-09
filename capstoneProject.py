@@ -35,12 +35,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import export_graphviz
 print(datetime.datetime.now(), ': [sklearn] libraries loaded!')
 
-
-# from sklearn.metrics import mean_squared_error
-# from sklearn.linear_model import LinearRegression
-# from matplotlib.scale import LinearScale
-# from numpy.polynomial import Chebyshev
-
 # Create target Directory if don't exist
 dirName = 'charts'
 if not os.path.exists(dirName):
@@ -56,15 +50,20 @@ print(datetime.datetime.now(), ': Importing .csv file and prepping the data...')
 
 # Main Meat is from here...
 
-
+# NOTE: Alternative way to import .csv file, commented out for release
 # def read_file(url):
 #     url = url + "?raw=true"
 #     df = pd.read_csv(url)
 #     return df
-
 # url = "https://github.com/BrianENason/Capstone-Project/blob/main/kc_house_data.csv"
-
 # df = read_file(url)
+# import sys
+# print(sys.modules.keys())
+# !pip freeze > requirements.txt
+'''
+from google.colab import drive
+drive.mount('/content/drive')
+'''
 
 # Import the file into a pandas dataframe
 df = pd.read_csv('kc_house_data.csv')
@@ -78,14 +77,6 @@ firstModel = False    #Variable to turn on/off first model
 largeTreePng = False  # Variable to turn on/off large tree diagram creation
 smallTreePng = False  # Variable to turn on/off small tree diagram creation
 
-# import sys
-# print(sys.modules.keys())
-# !pip freeze > requirements.txt
-
-'''
-from google.colab import drive
-drive.mount('/content/drive')
-'''
 
 """Once the data is imported and placed in a data frame, we will run analysis of the data."""
 
@@ -127,10 +118,10 @@ print(datetime.datetime.now(), ': Average Home Sale Price in 2015 is $', avg2015
 
 """Looking at the information above gives a better idea of the dataframe. We can see the mean, min and max values in each column as well as other statistics. Noticeable data from above includes:
 1. The minimum sale price starts at 75,000 and goes up to 7.7 million, but most sales fall around 540,000
-1. There exists some homes without bedrooms and/or bathrooms
-1. Waterfront is likely a T/F as the values are only 1 and 0
-1. View has a min of 0 and a max of 4.
-1. Half of all homes sold were built in the last 45 years 
+2. There exists some homes without bedrooms and/or bathrooms
+3. Waterfront is likely a T/F as the values are only 1 and 0
+4. View has a min of 0 and a max of 4.
+5. Half of all homes sold were built in the last 45 years 
 
 Using this as our base, we can start cleaning.<br> 
 First we have to remove any null data entries.<br> 
@@ -207,7 +198,7 @@ if showGraphs:
 
 """Looking at the above graph, we can see that there is a definite correlation between Grade and Price.<br> There are a couple noticeable outliers that we will need to remove before training the model like:
 1. Any grade 11 above $4 million 
-1. Any grade 2 or below.
+2. Any grade 2 or below.
 """
 
 # Scatter plot to locate any correlation between grade and year built.
@@ -288,7 +279,7 @@ if showGraphs:
 
 """Looking at the above graph, we can see that there really isn't a correlation between how many sides have a view and how much the price of the house was with the exception of:<br>
 1. 2, 3, and 4 have better sales than 0
-1. 0 has higher sale number than 1<br>
+2. 0 has higher sale number than 1<br>
 
 We can consider the pie chart below to see how many of each view-type there actually is before drawing any actual conclusions.
 """
@@ -329,8 +320,8 @@ if showGraphs:
 
 """As we can see in the Pie Chart above, more than 90% of the house sales were of homes with zero view. This would account for the inconclusive data from the bar chart above. in analysis we can see:
 1. There is 20X more home sales with 0 view-sides than with one
-1. There is almost 2X the number of home sales with two view sides vs one
-1. There are equal number of 3 and 4 view-side home sales <br>
+2. There is almost 2X the number of home sales with two view sides vs one
+3. There are equal number of 3 and 4 view-side home sales <br>
 
 Kings County washington is a dense urban setting, so it is logical that most of the home sales are considered as having 0 view-sides.
 """
@@ -372,44 +363,46 @@ if showGraphs:
 
 """The Scatter plot above shows the relationship between the living space (in square feet) and the sale price of the house. We can draw 3 conclusions from the above graph:
 1. There is a definite correlation between living space and sale price
-1. both the upper limits and lower limits increase linearly, but at different slopes indicating the range of sale price widens as the square footage goes up.
-1. The data has some extraneous data points that we can clean up (the 2 points above 12000 square feet)
+2. both the upper limits and lower limits increase linearly, but at different slopes indicating the range of sale price widens as the square footage goes up.
+3. The data has some extraneous data points that we can clean up (the 2 points above 12000 square feet)
 """
 
-## Scatter plot to identify any outliers in the data comparing living size to sale price
-#if showGraphs:
+""" Commented out scatterplot - code left in for reference!
+# Scatter plot to identify any outliers in the data comparing living size to sale price
+ if showGraphs:
 
-#    print(datetime.datetime.now(), ': Creating Scatter plot 4')
+    print(datetime.datetime.now(), ': Creating Scatter plot 4')
 
-#    # Assign values from the dataframe to the variables
-#    x = df['sqft_lot']
-#    y = df['price']
-#    step_value = 500000
+    # Assign values from the dataframe to the variables
+    x = df['sqft_lot']
+    y = df['price']
+    step_value = 500000
 
-#    # Set up size
-#    fig, cx = plt.subplots(figsize=(14, 7))
+    # Set up size
+    fig, cx = plt.subplots(figsize=(14, 7))
 
-#    # Create Scatter Plot
-#    cx.scatter(x, y, color='orange')
+    # Create Scatter Plot
+    cx.scatter(x, y, color='orange')
 
-#    # Format the graph
-#    plt.xlabel("Lot Size (in Sq Feet)")
-#    # plt.xlim(0, 14000)
-#    plt.xticks(np.arange(0, max(x) + 100000, 100000), rotation=90)
-#    plt.ylim(0, 8000000)
-#    plt.ylabel("Price (of sale)")
-#    plt.yticks(np.arange(0, max(y)+step_value, step_value))
-#    cx.yaxis.set_major_formatter(formatter = FuncFormatter(format_number))
-#    plt.title('How Lot size correlates to Sale Price of House')
+    # Format the graph
+    plt.xlabel("Lot Size (in Sq Feet)")
+    # plt.xlim(0, 14000)
+    plt.xticks(np.arange(0, max(x) + 100000, 100000), rotation=90)
+    plt.ylim(0, 8000000)
+    plt.ylabel("Price (of sale)")
+    plt.yticks(np.arange(0, max(y)+step_value, step_value))
+    cx.yaxis.set_major_formatter(formatter = FuncFormatter(format_number))
+    plt.title('How Lot size correlates to Sale Price of House')
 
-#    plt.tight_layout()
+    plt.tight_layout()
 
-#    # Save the graph to a .png file
-#    if printGraphs == True:
-#        plt.savefig('charts/lotSizeCompToSalePriceScatter.png')
-#    print(datetime.datetime.now(), 'Scatter plot 4 Created!!')
-#    # View the chart
-#    # plt.show()
+    # Save the graph to a .png file
+    if printGraphs == True:
+        plt.savefig('charts/lotSizeCompToSalePriceScatter.png')
+    print(datetime.datetime.now(), 'Scatter plot 4 Created!!')
+    # View the chart
+    # plt.show()
+    """
 
 # Scatter plot to locate any correlation between year built and sale price.
 if showGraphs:
@@ -455,7 +448,7 @@ if showGraphs:
 
 """The scatter plot above compares the year a house was built to how much it sold for. Some interesting points of interest are:
 1. Looking at the blue "Best Fit" line, we can see that there is relatively little change between how much a house sells for as compared to the year it was built.
-1. There are some outlier data points we can clean up to better train the model, most notably the 3 above $6,000,000
+2. There are some outlier data points we can clean up to better train the model, most notably the 3 above $6,000,000
 """
 
 # Creating Histogram of number of sales per year built
@@ -506,8 +499,8 @@ if showGraphs:
 
 """In the histogram above, we can see the number of home sales that occurred for each division of year the house was built.<br>
 1. There is a noticeably slight incline as the year built reaches towards today
-1. The oldest houses on record (those built in 1900) have almost 100 sales.
-1. The most sales are homes built 2 years prior to 2015
+2. The oldest houses on record (those built in 1900) have almost 100 sales.
+3. The most sales are homes built 2 years prior to 2015
 
 We will use this data to train the model on all home sales, and then on home sales for houses built in the last 50 years.
 """
@@ -559,7 +552,7 @@ if showGraphs:
 
 """The Histogram above is to deduce what are the zipcodes with the most sales and what zipcodes have no sales. We can see that there are 70 zipcodes in consideration in Kings County, Washington.
 1. The most-selling zipcode is 98103
-1. The least-selling zipcode is 98039
+2. The least-selling zipcode is 98039
 """
 
 # Piechart to break down number of homesales per $100,000 increments
@@ -605,9 +598,9 @@ if showGraphs:
 
 """The Pie Chart divides the sales data into 100,000 increments. From this, we can deduce:
 1. There are few home sales in the 0 - 100,000 dollar range
-1. The largest range is the 400,000 dollar increment
-1. Over half of all home sales are between 200,000 dollars and 599,999 dollars
-1. Only 2.6 percent of the sales are homes above 1.5 million dollars
+2. The largest range is the 400,000 dollar increment
+3. Over half of all home sales are between 200,000 dollars and 599,999 dollars
+4. Only 2.6 percent of the sales are homes above 1.5 million dollars
 
 We can now remove outliers identified in the data stats and the graphs from above to generate a more accurate model later on
 """
@@ -684,7 +677,7 @@ maxDepth =None           # None is the best so far (as in, don't  include max_de
 # NOTE: This setup with 42 as random state and test_size of 0.25 works with the further code
 train_df, test_df, train_prices, test_prices = train_test_split(df, prices, test_size = testSizePercent, random_state = randomSeed)
 
-'''
+''' Used for training, commented out for final
 # For testing/debug purposes:
 #   This will show how many (row, columns) are in the divided sets
 print('Training Dataframe Shape:', train_df.shape)
@@ -862,12 +855,14 @@ print(f"Uber Compressed Random Forest: {np.round(os.path.getsize('RF_Uber_compre
 
 # ...to Here
 
+# Changes the value of the data "on_water" from the .csv file to 1 and 0 (T/F)
 def waterFrontDecision(onWater):
   isOnWater = 0;
   if onWater == True:
     isOnWater = 1
   return isOnWater    
 
+# Used to take in user-entered value from the GUI and either convert it to an integer (if it is an integer input) or return "-1" if it is not an integer input
 def convertToInt(posInt):
     newPosInt = 0
     try:
@@ -879,18 +874,23 @@ def convertToInt(posInt):
 print('')
 print(datetime.datetime.now(), ': Loading GUI...')
 
+#Create the Window (GUI) for the user. NOTE: Not put at the start of the code because the machine learning takes some time and user can't interact with GUI until the ML is finished
 def make_window():
     sg.theme('Kayak')   
-        
-    zipcodes = [98001, 98002, 98003, 98004, 98005, 98006, 98007, 98008, 98010, 98011, 98014, 98019, 98022, 98023, 98024, 98027, 98028, 98029, 98030, 98031, 98032, 98033, 98034, 98038, 98039, 98040, 98042, 98045, 98052, 98053, 98055, 98056, 98058, 98059, 98065, 98070, 98072, 98074, 98075, 98077, 98092, 98102, 98103, 98105, 98106, 98107, 98108, 98109, 98112, 98115, 98116, 98117, 98118, 98119, 98122, 98125, 98126, 98133, 98136, 98144, 98146, 98148, 98155, 98166, 98168, 98177, 98178, 98188, 98198, 98199] # [91919, 92929, 93939, 94949, 95959, 96969]
-    bedrooms = [1, 2, 3, 4, 5, 6, 7, 8]
-    bathrooms = [1, 2, 3, 4, 5, 6, 7, 8]
+    
+    # Set values for User Input combo boxes
+    zipcodes = [98001, 98002, 98003, 98004, 98005, 98006, 98007, 98008, 98010, 98011, 98014, 98019, 98022, 98023, 98024, 98027, 98028, 98029, 98030, 98031, 98032, 98033, 98034, 98038, 98039, 98040, 98042, 98045, 98052, 98053, 98055, 98056, 98058, 98059, 98065, 98070, 98072, 98074, 98075, 98077, 98092, 98102, 98103, 98105, 98106, 98107, 98108, 98109, 98112, 98115, 98116, 98117, 98118, 98119, 98122, 98125, 98126, 98133, 98136, 98144, 98146, 98148, 98155, 98166, 98168, 98177, 98178, 98188, 98198, 98199] 
+    bedrooms = [1, 2, 3, 4, 5, 6, 7, 8] 
+    bathrooms = [1, 2, 3, 4, 5, 6, 7, 8] 
     views = [0, 1, 2, 3, 4]
     grade = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     year = [] 
+
+    # Fill the "Year" list with all values from 1900 to today.
     for i in range(1900,( datetime.datetime.now().year + 1)):
         year.append(i)    
 
+    #Set up the "Look" and elements of the GUI Main tab
     main_layout =  [
 	    [sg.Text('Set the following values and then click "Submit" when finished')],
         [sg.Text('Name This Collection'), sg.Input(default_text='Collection Name',size=(20,1), key='-NAMECOLLECTION-')],
@@ -907,11 +907,13 @@ def make_window():
         [sg.Text('Grade'), sg.Combo(values=(grade), default_value=grade[0], readonly=False, k='-GRADE-')],        
 	    [sg.Button('Submit'), sg.Button('Exit')]] 
 
+    #Set up the "Look" and elements of the GUI "Log" tab
     logging_layout = [
         [sg.Text("History of your Collections")],
         [sg.Multiline(size=(60,15), font='Courier 8', expand_x=True, expand_y=True, write_only=True, reroute_stdout=True, reroute_stderr=True, echo_stdout_stderr=True, autoscroll=True, auto_refresh=True)],
         [sg.Button('Exit', key='Exit2')]]
     
+    #Set up the "Look" and elements of the GUI "Graphs" tab
     graphing_layout = [
         [sg.Text("Select the Graph you wish to view")],
         [sg.Image(key='-GRAPH-', size=(16, 8))],
@@ -927,17 +929,19 @@ def make_window():
             sg.Button('Clear Charts', key='-CLR-')],
         [sg.Button('Exit', key='Exit3')]]  # sg.Button('Lot to Price', key='-SPLOT5-'),
 
+    #Set up the "Look" and elements of the GUI "About" tab
     about_layout = [
         [sg.Text('Price/Cost Estimator for Kings County WA')],
         [sg.Text('Version 1.2.1')],        
         [sg.HSeparator()],
         [sg.Text('Brian Nason')],
-        [sg.Text('Student Number: 001003011')],
-        [sg.Text('email: bnason1@wgu.edu')],
+        [sg.Text('Student Number: xxxxxxxxx')],
+        [sg.Text('email: xxxxxx@wgu.edu')],
         [sg.Text('')],
         [sg.Button('Exit', key='Exit4')]]
 
     
+    # Set order/structure of GUI tabs
     layout = [[sg.Text('House Price/Cost Estimator', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=False)]]
     layout +=[[sg.TabGroup([[  sg.Tab('Main Page', main_layout),
                                sg.Tab('Graphs', graphing_layout),
@@ -950,6 +954,7 @@ def make_window():
     window = sg.Window('Capstone Final Project', layout, no_titlebar=False, disable_close=True, resizable=True, margins=(20, 20), location=(0, 0), finalize=True, keep_on_top=True)    
     window.set_min_size(window.size)
     
+    # Disabling the window close so the user has to exit with the "Close" button to ensure that all the graphs get wiped after each run
     window.DisableClose=True
     return window
 
@@ -967,80 +972,94 @@ def main():
     #resultName2 = 'Not Found'
     #resultPrice2 = 'Not Found'
 
-    # This is an Event Loop 
+    # This is the Event Loop. It will listen for any events to happen in the GUI, and when they do, their corresponding actions will execute 
     while True:
         event, values = window.read(timeout=100)
 
-        if event in (None, 'Exit', 'Exit2', 'Exit3', 'Exit4'):
+        # When the user wants to close from any one of the tabs, this will wipe the graph data from the temp folder.
+	if event in (None, 'Exit', 'Exit2', 'Exit3', 'Exit4'):
             for png in pngCollection:
                 try:
                     os.remove(png)
-                    print(datetime.datetime.now(),': Deling file:', png)
+                    print(datetime.datetime.now(),': Deleting file:', png)
                 except:
                     print(datetime.datetime.now(), png, ' does not exist')
             print(datetime.datetime.now(), ": Clicked Exit!")
             break
 
-        elif event == '-SPLOT1-':
+        # This is for when the "Grade to Price" graph button is selected
+	elif event == '-SPLOT1-':
             print(datetime.datetime.now(), 'Grade to Price graph selected by user (-SPLOT1-)')
             window['-GRAPH-'].update('charts/gradeToPriceComparisonWithFitLineScatterPlot.png')
             window['-DESCGRAPH-'].update('Looking at the above graph, we can see that there is a definite correlation between Grade and Price.\nThere are a couple noticeable outliers that we will need to remove before training the model like:\n1. Any grade 11 above $4 million \n2. Any grade 2 or below.')
 
-        elif event == '-SPLOT2-':
+        # This is for when the "Grade to Year" graph button is selected
+	elif event == '-SPLOT2-':
             print(datetime.datetime.now(), 'Grade to Year graph selected by user (-SPLOT2-)')
             window['-GRAPH-'].update('charts/gradeToYearBuiltScatter.png')
             window['-DESCGRAPH-'].update("The Scatter plot above shows us that there is a density correlation between the grade of the house and the year it was built. The fit line demonstrates this correlation. \nAs the year built goes up, the general grade goes up as well. This makes sense when you consider construction methods, age, etc. all effect the perceived grade of the home.")
 
-        elif event == '-SPLOT3-':
+        # This is for when the "Living size to Price" graph button is selected
+	elif event == '-SPLOT3-':
             print(datetime.datetime.now(), 'Living size to Price graph selected by user (-SPLOT3-)')
             window['-GRAPH-'].update('charts/livingSizeCompToSalePriceScatter.png')
             window['-DESCGRAPH-'].update("The Scatter plot above shows the relationship between the living space (in square feet) and the sale price of the house. We can draw 3 conclusions from the above graph:\n1. There is a definite correlation between living space and sale price.\n2. both the upper limits and lower limits increase linearly, but at different slopes indicating the range of sale price widens as the square footage goes up.\n3. The data has some extraneous data points that we can clean up (the 2 points above 12000 square feet)")
 
-        elif event == '-SPLOT4-':
+        # This is for when the "Year to Sale" graph button is selected
+	elif event == '-SPLOT4-':
             print(datetime.datetime.now(), 'Year to Sale graph selected by user (-SPLOT4-)')
             window['-GRAPH-'].update('charts/yrBuiltToSalesScatter.png')
             window['-DESCGRAPH-'].update("The scatter plot above compares the year a house was built to how much it sold for. Some interesting points of interest are:\n1. Looking at the blue \"Best Fit\" line, we can see that there is relatively little change between how much a house sells for as compared to the year it was built.\n2. There are some outlier data points we can clean up to better train the model, most notably the 3 above $6,000,000")
 
-        #elif event == '-SPLOT5-':
+        # The commented-out graph. Code left her if needed in the future
+	#elif event == '-SPLOT5-':
         #    window['-GRAPH-'].update('charts/lotSizeCompToSalePriceScatter.png')
         #    window['-DESCGRAPH-'].update("Quick Description of this Scatter plot")
 
-        elif event == '-PIE1-':            
+        # This is for when the "Home Sale by 100K" Pie Chart button is selected
+	elif event == '-PIE1-':            
             print(datetime.datetime.now(), 'Home sales to 100K Pie Chart selected by user (-PIE1-)')
             window['-GRAPH-'].update('charts/homesalesPer100KPieChart.png')
             window['-DESCGRAPH-'].update("The Pie Chart divides the sales data into 100,000 increments. From this, we can deduce:\n1. There are few home sales in the 0 - 100,000 dollar range\n2. The largest range is the 400,000 dollar increment\n3. Over half of all home sales are between 200,000 dollars and 599,999 dollars\n4. Only 2.6 percent of the sales are homes above 1.5 million dollars\nWe can now remove outliers identified in the data stats and the graphs from above to generate a more accurate model later on")
 
-        elif event == '-PIE2-':            
+        # This is for when the "Home Sale to Num View" Pie Chart button is selected
+	elif event == '-PIE2-':            
             print(datetime.datetime.now(), 'Home sales vs. Num View Sides Pie Chart selected by user (-PIE2-)')
             window['-GRAPH-'].update('charts/homesGroupedBySidePieChart.png')
             window['-DESCGRAPH-'].update("As we can see in the Pie Chart above, more than 90% of the house sales were of homes with zero view. This would account for the inconclusive data from the bar chart above. in analysis we can see:\n1. There is 20X more home sales with 0 view-sides than with one\n2. There is almost 2X the number of home sales with two view sides vs one\n3. There are equal number of 3 and 4 view-side home sales\nKings County washington is a dense urban setting, so it is logical that most of the home sales are considered as having 0 view-sides.")
 
-        elif event == '-HIST1-':
+        # This is for when the "Sales per year" Histogram button is selected
+	elif event == '-HIST1-':
             print(datetime.datetime.now(), 'Sales per Year Histogram selected by user (-HIST1-)')
             window['-GRAPH-'].update('charts/yearSalesHistogram.png')
             window['-DESCGRAPH-'].update("In the histogram above, we can see the number of home sales that occurred for each division of year the house was built:\n1. There is a noticeably slight incline as the year built reaches towards today\n2. The oldest houses on record (those built in 1900) have almost 100 sales.\n3. The most sales are homes built 2 years prior to 2015\nWe will use this data to train the model on all home sales, and then on home sales for houses built in the last 50 years.")
 
-        elif event == '-HIST2-':
+        # This is for when the "Sales per zipcode" Histogram button is selected
+	elif event == '-HIST2-':
             print(datetime.datetime.now(), 'Sales per Zipcode Histogram selected by user (-HIST2-)')
             window['-GRAPH-'].update('charts/zipSalesHistogram.png')
             window['-DESCGRAPH-'].update("The Histogram above is to deduce what are the zipcodes with the most sales and what zipcodes have no sales. We can see that there are 70 zipcodes in consideration in Kings County, Washington.\n1. The most-selling zipcode is 98103\n2. The least-selling zipcode is 98039")
 
-        elif event == '-CLR-':
+        # This is for when the user selects to clear the chart display
+	elif event == '-CLR-':
             print(datetime.datetime.now(), 'Clear Chart Screen selected by user (-CLR-)')
             window['-GRAPH-'].update()
             window['-DESCGRAPH-'].update('Select a button below to view the chart')
 
-        elif event == 'About':
+        # When user clicks on the "About" tab
+	elif event == 'About':
             print(datetime.datetime.now(), ": Clicked on About!")
             sg.popup('Price/Cost Estimator for Kings County WA',
                      'Version 1.2.1',
                      'Brian Nason',
-                     'Student Number: 001003011',
-                     'email: bnason1@wgu.edu', keep_on_top=True)
+                     'Student Number: xxxxxxxxx',
+                     'email: xxxxxxx@wgu.edu', keep_on_top=True)
 
-        elif event == 'Submit':
-            print(datetime.datetime.now(), ': User Clicked Submit')
+        # When the user click on the "Submit" tab. This will take all the user-enter input, verify and process it, send it through the Model, and spit out the sale price in the form of a pop-up
+	elif event == 'Submit':
+            print(datetime.datetime.now(), ': User Clicked Submit') # Log the user action
 
+            # Collect the user-entered values. These will be processed through "waterFrontDecision" or "convertToInt" functions above to ensure they are viable inputs.
             values['-WATERFRONT-'] = waterFrontDecision(values['-WATERFRONT-'])            
             values['-SQFTLIVING-'] = convertToInt(values['-SQFTLIVING-'])
             values['-SQFTLOT-'] = convertToInt(values['-SQFTLOT-'])
@@ -1057,12 +1076,15 @@ def main():
             for i in range(1, 12):
                 modelInput.append(rawInput[i])
             
-            negList = list(filter(lambda x: (x < 0), modelInput))
+            # Ensures that all values are viable. If there are any negative values entered, it will be recorded here and used in the next round of data checking
+	    negList = list(filter(lambda x: (x < 0), modelInput))
 
-            if (resultName in collectionNames):
+            # To make sure the name the user gave to their query hasn't been used yet
+	    if (resultName in collectionNames):
                 print(datetime.datetime.now(), ": Name Element Already Exists!!")
                 sg.popup('The name you chose:' , resultName,'Has Already been used.', 'Please change it to continue!',keep_on_top=True)
-            elif (len(negList) > 0):
+            #If there are any negative values, then the data will be declared invalid. This could be user-entered negative values or incorrect values entered (like letters)
+	    elif (len(negList) > 0):
                 print(datetime.datetime.now(), ": Invalid Data entered!!")
                 sg.popup('Invalid Data - Check your input fields',keep_on_top=True)
             else:

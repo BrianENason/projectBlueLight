@@ -1,7 +1,7 @@
 *************************************************************************************************
 *												*
-*	Brian Nason - Student Number 001003011							*
-*	contact: bnason1@wgu.edu								*
+*	Brian Nason - Student Number XXXXXXXXX							*
+*	contact: XXXXXXX@wgu.edu								*
 *												*
 *	Capstone project for B.S. in Computer Science						*
 *												*
